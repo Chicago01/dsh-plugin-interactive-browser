@@ -357,20 +357,54 @@ await new Promise(() => {})
     return starting
   }
 
-  function stopStack() {
+  /**
+   * Stop every layer, escalating to SIGKILL when a port stays bound.
+   *
+   * x11vnc ignores SIGTERM while a client is attached and keeps the RFB port
+   * open, which would make the next start silently reuse a dead display.
+   */
+  async function stopStack() {
+    const targets = [
+      ['websockify', settings.webPort],
+      ['x11vnc', settings.vncPort],
+      ['browser', undefined],
+      ['xvfb', undefined],
+    ]
     const stopped = []
-    for (const key of ['websockify', 'x11vnc', 'browser', 'xvfb']) {
+    const pending = []
+    for (const [key, port] of targets) {
       const pid = readPid(key)
+      rmSync(pidFile(key), { force: true })
       if (pid === undefined) continue
       try {
         process.kill(pid, 'SIGTERM')
         stopped.push(key)
+        pending.push([key, pid, port])
       } catch {
         /* already gone */
       }
-      rmSync(pidFile(key), { force: true })
     }
     rmSync(readyFile, { force: true })
+
+    for (const [key, pid, port] of pending) {
+      if (port === undefined) continue
+      let freed = false
+      for (let i = 0; i < 10; i += 1) {
+        if (!await portOpen(port)) {
+          freed = true
+          break
+        }
+        await delay(200)
+      }
+      if (freed) continue
+      try {
+        process.kill(pid, 'SIGKILL')
+        stopped.push(`${key}(forced)`)
+      } catch {
+        /* already gone */
+      }
+      await delay(200)
+    }
     return stopped
   }
 
@@ -512,7 +546,7 @@ function registerRoutes(ctx, runtime, settings) {
               return json(res, { error: String(error?.message ?? error) }, 500)
             }
           }
-          return json(res, { stopped: runtime.stopStack() })
+          return json(res, { stopped: await runtime.stopStack() })
         }
         return proxyHttp(req, res, settings.webPort)
       },
@@ -592,7 +626,7 @@ function toolDefinition(runtime) {
         }
       }
       if (action === 'close') {
-        return { running: false, note: `stopped: ${runtime.stopStack().join(', ') || 'nothing'}` }
+        return { running: false, note: `stopped: ${(await runtime.stopStack()).join(', ') || 'nothing'}` }
       }
       if (action === 'screenshot') {
         const state = await runtime.status()

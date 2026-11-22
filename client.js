@@ -102,13 +102,22 @@ window.__ModuleLoader__.load({
           h('button', { type: 'button', onClick: stop, style: buttonStyle }, t('stop')),
         ),
         error ? h('div', { style: { padding: '6px 10px', fontSize: 12, color: 'var(--dsw-alias-danger, #c14343)' } }, error) : null,
-        h('iframe', {
-          key: nonce,
-          title: t('title'),
-          src: panelSrc(),
-          allow: 'clipboard-read; clipboard-write',
-          style: { flex: 1, width: '100%', minHeight: 0, border: 0, display: 'block', background: '#111' },
-        }),
+        // The iframe is mounted only once the stack is up: noVNC returns 503
+        // before that, and an iframe that already failed does not retry itself.
+        state.phase === 'online'
+          ? h('iframe', {
+            key: nonce,
+            title: t('title'),
+            src: panelSrc(),
+            allow: 'clipboard-read; clipboard-write',
+            style: { flex: 1, width: '100%', minHeight: 0, border: 0, display: 'block', background: '#111' },
+          })
+          : h('div', {
+            style: {
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 12, opacity: 0.6, background: '#111', color: '#ddd',
+            },
+          }, state.phase === 'failed' ? t('failed') : t('starting')),
       );
     }
 
