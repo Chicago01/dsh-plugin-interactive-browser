@@ -123,6 +123,9 @@ Every field is optional; the row in `cordis.patch.yml` can override them:
 
 ## Limitations
 
+- **Linux only.** The stack relies on `Xvfb`, so a macOS or Windows Host has no
+  supported display path yet; on those, install it on a Linux machine you can
+  reach instead.
 - The display is a fixed virtual screen; there is no audio and no clipboard
   bridge beyond what the VNC viewer itself supports.
 - Downloads stay inside the virtual display's browser profile, not on your machine.
