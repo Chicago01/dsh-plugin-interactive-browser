@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Interactive browser",
+    "description": "A real Chromium docked in the right Sidebar. When a site needs a password, an SMS code or a QR scan, the login screen appears beside the conversation, you sign in yourself, and the agent continues from the live session.",
+    "detail": "docs/DETAIL.md"
+  }
+}

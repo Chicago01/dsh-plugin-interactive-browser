@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "交互式浏览器",
+    "description": "在右侧栏里放一台真实 Chromium。遇到需要账号密码、短信验证码、钉钉或企微扫码的站点时，把登录界面直接摊在你面前，你亲手操作，agent 接着干活。",
+    "detail": "docs/DETAIL.md"
+  }
+}

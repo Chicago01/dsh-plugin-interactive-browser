@@ -1,0 +1,3 @@
+- insert:
+    - id: interactive-browser
+      name: 'dsh-plugin-interactive-browser'

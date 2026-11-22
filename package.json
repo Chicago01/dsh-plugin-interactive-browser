@@ -1,0 +1,61 @@
+{
+  "name": "dsh-plugin-interactive-browser",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A real Chromium on a virtual display, docked in the DeepSeek Harness right Sidebar for sign-in and manual steps.",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chicago01/dsh-plugin-interactive-browser.git"
+  },
+  "homepage": "https://github.com/Chicago01/dsh-plugin-interactive-browser#readme",
+  "bugs": {
+    "url": "https://github.com/Chicago01/dsh-plugin-interactive-browser/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "vnc",
+    "novnc",
+    "playwright",
+    "browser",
+    "sidebar"
+  ],
+  "engines": {
+    "dsh": "^0.2.3-alpha.1",
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check index.js && node --check client.js"
+  }
+}
